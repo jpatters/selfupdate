@@ -1,10 +1,10 @@
-# selfupdatectl: Manage deployment of self updating Fyne programs [![godoc reference](https://godoc.org/github.com/fynelabs/self-update?status.png)](https://godoc.org/github.com/fynelabs/self-update)
+# selfupdatectl: Manage deployment of self updating Fyne programs [![godoc reference](https://godoc.org/github.com/jpatters/self-update?status.png)](https://godoc.org/github.com/jpatters/self-update)
 
 _selfupdatectl_ provide the ability to generate private and public key that can be used to sign and verify Fyne program to finally upload them to a S3 bucket.
 
 To install _selfupdatectl_ you should do:
 ```
-go install github.com/fynelabs/selfupdate/cmd/selfupdatectl
+go install github.com/jpatters/selfupdate/cmd/selfupdatectl
 ```
 
 ## _selfupdatectl create-keys_ and _selfupdatectl print-key_

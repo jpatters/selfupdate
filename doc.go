@@ -3,7 +3,7 @@ Package selfupdate provides functionality to implement secure, self-updating Go 
 
 For complete updating solutions please see Equinox (https://equinox.io) and go-tuf (https://github.com/flynn/go-tuf).
 
-Basic Example
+# Basic Example
 
 This example shows how to update a program remotely from a URL.
 
@@ -11,7 +11,7 @@ This example shows how to update a program remotely from a URL.
 		"fmt"
 		"net/http"
 
-		"github.com/fynelabs/selfupdate"
+		"github.com/jpatters/selfupdate"
 	)
 
 	func doUpdate(url string) error {
@@ -30,8 +30,7 @@ This example shows how to update a program remotely from a URL.
 		return err
 	}
 
-
-Binary Patching
+# Binary Patching
 
 Go binaries can often be large. It can be advantageous to only ship a binary patch to a client
 instead of the complete program text of a new version.
@@ -43,7 +42,7 @@ may be applied by implementing the Patcher interface.
 		"encoding/hex"
 		"io"
 
-		"github.com/fynelabs/selfupdate"
+		"github.com/jpatters/selfupdate"
 	)
 
 	func updateWithPatch(patch io.Reader) error {
@@ -56,7 +55,7 @@ may be applied by implementing the Patcher interface.
 		return err
 	}
 
-Checksum Verification
+# Checksum Verification
 
 Updating executable code on a computer can be a dangerous operation unless you
 take the appropriate steps to guarantee the authenticity of the new code. While
@@ -76,7 +75,7 @@ specified as a hex string.
 		"encoding/hex"
 		"io"
 
-		"github.com/fynelabs/selfupdate"
+		"github.com/jpatters/selfupdate"
 	)
 
 	func updateWithChecksum(binary io.Reader, hexChecksum string) error {
@@ -94,7 +93,7 @@ specified as a hex string.
 		return err
 	}
 
-Cryptographic Signature Verification
+# Cryptographic Signature Verification
 
 Cryptographic verification of new code from an update is an extremely important way to guarantee the
 security and integrity of your updates.
@@ -113,7 +112,7 @@ with the private key and distribute the signature along with the update.
 		"encoding/hex"
 		"io"
 
-		"github.com/fynelabs/selfupdate"
+		"github.com/jpatters/selfupdate"
 	)
 
 	var publicKey = []byte(`
@@ -149,15 +148,14 @@ with the private key and distribute the signature along with the update.
 		return err
 	}
 
-
-Building Single-File Go Binaries
+# Building Single-File Go Binaries
 
 In order to update a Go application with self-update, you must distributed it as a single executable.
 This is often easy, but some applications require static assets (like HTML and CSS asset files or TLS certificates).
 In order to update applications like these, you'll want to make sure to embed those asset files into
 the distributed binary with a tool like go-bindata (my favorite): https://github.com/jteeuwen/go-bindata
 
-Non-Goals
+# Non-Goals
 
 Mechanisms and protocols for determining whether an update should be applied and, if so, which one are
 out of scope for this package. Please consult go-tuf (https://github.com/flynn/go-tuf) or Equinox (https://equinox.io)
@@ -167,6 +165,5 @@ selfupdate only works for self-updating applications that are distributed as a s
 applications that do not have additional assets or dependency files.
 Updating application that are distributed as mutliple on-disk files is out of scope, although this
 may change in future versions of this library.
-
 */
 package selfupdate

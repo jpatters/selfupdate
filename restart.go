@@ -4,7 +4,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/fynelabs/selfupdate/internal/osext"
+	"github.com/jpatters/selfupdate/internal/osext"
 )
 
 func restart(exiter func(error), executable string) error {
