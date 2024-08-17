@@ -24,7 +24,7 @@ type Config struct {
 	Source               Source            // Necessary Source for update
 	Schedule             Schedule          // Define when to trigger an update
 	PublicKey            ed25519.PublicKey // The public key that match the private key used to generate the signature of future update
-	TargetDir            string            // TargetPath defines the path to the file to update.
+	TargetPath           string            // TargetPath defines the path to the file to update.
 	WindowsRequiresAdmin bool              // If true will require admin rights to restart the application. Applies to Windows only
 
 	ProgressCallback       func(float64, error) // if present will call back with 0.0 at the start, rising through to 1.0 at the end if the progress is known. A negative start number will be sent if size is unknown, any error will pass as is and the process is considered done
@@ -118,7 +118,7 @@ func (u *Updater) CheckNow() error {
 
 	pr := &progressReader{Reader: r, progressCallback: u.conf.ProgressCallback, contentLength: contentLength}
 
-	u.executable, err = applyUpdate(pr, u.conf.PublicKey, s, u.conf.TargetDir)
+	u.executable, err = applyUpdate(pr, u.conf.PublicKey, s, u.conf.TargetPath)
 	if err != nil {
 		return err
 	}
