@@ -81,6 +81,11 @@ func apply(update io.Reader, opts *Options) error {
 		return err
 	}
 
+	exePath, err := ExecutableRealPath()
+	if err != nil {
+		return err
+	}
+
 	var newBytes []byte
 	if opts.Patcher != nil {
 		if newBytes, err = opts.applyPatch(update); err != nil {
@@ -111,7 +116,16 @@ func apply(update io.Reader, opts *Options) error {
 	filename := filepath.Base(opts.TargetPath)
 
 	// Copy the contents of newbinary to a new executable file
-	newPath := filepath.Join(updateDir, fmt.Sprintf(".%s.new", filename))
+	var newPath string
+	if opts.TargetPath == exePath {
+		newPath = filepath.Join(updateDir, fmt.Sprintf(".%s.new", filename))
+	} else {
+		err := os.MkdirAll(updateDir, 0755)
+		if err != nil {
+			return err
+		}
+		newPath = opts.TargetPath
+	}
 	fp, err := openFile(newPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, opts.TargetMode)
 	if err != nil {
 		return err
@@ -128,6 +142,10 @@ func apply(update io.Reader, opts *Options) error {
 	// if we don't call fp.Close(), windows won't let us move the new executable
 	// because the file will still be "in use"
 	fp.Close()
+
+	if opts.TargetPath != exePath {
+		return nil
+	}
 
 	// this is where we'll move the executable to so that we can swap in the updated replacement
 	oldPath := opts.OldSavePath
