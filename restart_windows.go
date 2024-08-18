@@ -6,50 +6,32 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/jpatters/selfupdate/internal/osext"
 	"golang.org/x/sys/windows"
 )
 
-func restart(exiter func(error), executable string, requiresAdmin bool) error {
-	var err error
-	if executable == "" {
-		executable, err = osext.Executable()
-		if err != nil {
-			return err
-		}
+func restartAsUser(executable string, args []string) error {
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
 	}
 
-	if requiresAdmin {
-		err = restartAsAdmin(executable)
-	} else {
-		wd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		_, err = os.StartProcess(executable, os.Args, &os.ProcAttr{
-			Dir:   wd,
-			Env:   os.Environ(),
-			Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-			Sys:   &syscall.SysProcAttr{},
-		})
-	}
-
-	if exiter != nil {
-		exiter(err)
-	} else if err == nil {
-		os.Exit(0)
-	}
+	_, err = os.StartProcess(executable, args, &os.ProcAttr{
+		Dir:   wd,
+		Env:   os.Environ(),
+		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		Sys:   &syscall.SysProcAttr{},
+	})
 	return err
 }
 
-func restartAsAdmin(executable string) error {
+func restartAsAdmin(executable string, args []string) error {
 	verb := "runas"
-	args := strings.Join(os.Args[1:], " ")
+	arg := strings.Join(args, " ")
 
 	verbPtr, _ := syscall.UTF16PtrFromString(verb)
 	exePtr, _ := syscall.UTF16PtrFromString(executable)
 	cwdPtr, _ := syscall.UTF16PtrFromString(filepath.Dir(executable))
-	argPtr, _ := syscall.UTF16PtrFromString(args)
+	argPtr, _ := syscall.UTF16PtrFromString(arg)
 
 	var showCmd int32 = 1 //SW_NORMAL
 

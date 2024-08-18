@@ -26,6 +26,7 @@ type Config struct {
 	PublicKey            ed25519.PublicKey // The public key that match the private key used to generate the signature of future update
 	TargetPath           string            // TargetPath defines the path to the file to update.
 	WindowsRequiresAdmin bool              // If true will require admin rights to restart the application. Applies to Windows only
+	InheritArgs          bool              // If true will pass the current arguments to the restarted application
 
 	ProgressCallback       func(float64, error) // if present will call back with 0.0 at the start, rising through to 1.0 at the end if the progress is known. A negative start number will be sent if size is unknown, any error will pass as is and the process is considered done
 	RestartConfirmCallback func() bool          // if present will ask for user acceptance before restarting app
@@ -134,7 +135,7 @@ func (u *Updater) CheckNow() error {
 
 // Restart once an update is done can trigger a restart of the binary. This is useful to implement a restart later policy.
 func (u *Updater) Restart() error {
-	return restart(u.conf.ExitCallback, u.executable, u.conf.WindowsRequiresAdmin)
+	return restart(u.conf.ExitCallback, u.executable, u.conf.WindowsRequiresAdmin, u.conf.InheritArgs)
 }
 
 // Manage sets up an Updater and runs it to manage the current executable.

@@ -1,21 +1,13 @@
-//go:build !windows
-// +build !windows
-
 package selfupdate
 
 import (
 	"os"
-	"syscall"
 
 	"github.com/jpatters/selfupdate/internal/osext"
 )
 
-func restart(exiter func(error), executable string, requiresAdmin bool) error {
-	wd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
+func restart(exiter func(error), executable string, requiresAdmin bool, inheritArgs bool) error {
+	var err error
 	if executable == "" {
 		executable, err = osext.Executable()
 		if err != nil {
@@ -23,12 +15,16 @@ func restart(exiter func(error), executable string, requiresAdmin bool) error {
 		}
 	}
 
-	_, err = os.StartProcess(executable, os.Args, &os.ProcAttr{
-		Dir:   wd,
-		Env:   os.Environ(),
-		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-		Sys:   &syscall.SysProcAttr{},
-	})
+	args := []string{}
+	if inheritArgs {
+		args = os.Args[1:]
+	}
+
+	if requiresAdmin {
+		err = restartAsAdmin(executable, args)
+	} else {
+		err = restartAsUser(executable, args)
+	}
 
 	if exiter != nil {
 		exiter(err)
